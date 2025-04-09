@@ -1,29 +1,27 @@
 @extends('adminlte::page')
 
-@section('title', 'Users Management')
+@section('title', 'Roles Management')
 
 @section('content_header')
-    <h1>Users Management</h1>
+    <h1>Roles Management</h1>
 @endsection
 
 @section('content')
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Users List</h3>
+            <h3 class="card-title">Roles List</h3>
             <div class="card-tools">
-                <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Add New User</a>
+                <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">Create New Role</a>
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-striped" id="users-table">
+            <table class="table table-bordered table-striped" id="roles-table">
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th>#</th>
                         <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Created At</th>
-                        <th>Action</th>
+                        <th>Permissions</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
             </table>
@@ -40,34 +38,30 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(function() {
-            $('#users-table').DataTable({
+            $('#roles-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('admin.users.data') }}",
+                ajax: "{{ route('admin.roles.data') }}", // Updated route name
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                     { data: 'name', name: 'name' },
-                    { data: 'email', name: 'email' },
-                    { data: 'roles', name: 'roles.name' },
-                    { data: 'created_at', name: 'created_at' },
+                    { data: 'permissions', name: 'permissions', orderable: false },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
-                ],
-                pageLength: 10,
-                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]]
+                ]
             });
         });
 
-        function deleteUser(userId) {
-            if (confirm('Are you sure you want to delete this user?')) {
+        function deleteRole(roleId) {
+            if (confirm('Are you sure you want to delete this role?')) {
                 $.ajax({
-                    url: `/admin/users/${userId}`,
+                    url: `/admin/roles/${roleId}`,
                     type: 'DELETE',
                     data: {
                         "_token": "{{ csrf_token() }}"
                     },
                     success: function(response) {
                         if (response.success) {
-                            $('#users-table').DataTable().ajax.reload();
+                            $('#roles-table').DataTable().ajax.reload();
                         }
                     }
                 });

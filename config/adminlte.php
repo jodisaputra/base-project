@@ -110,7 +110,7 @@ return [
     */
 
     'preloader' => [
-        'enabled' => false,
+        'enabled' => true,
         'mode' => 'fullscreen',
         'img' => [
             'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
@@ -314,11 +314,6 @@ return [
         [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
-        ],
-        [
-            'text' => 'Dashboard',
-            'url' => 'admin',
-            'icon' => 'fas fa-tachometer-alt'
         ],
         [
             'text' => 'blog',

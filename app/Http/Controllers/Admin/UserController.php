@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Yajra\DataTables\Facades\DataTables;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -19,31 +20,49 @@ class UserController extends Controller
 
     public function getData()
     {
-        $users = User::query();
+        $users = User::with('roles');
 
         return DataTables::of($users)
-            ->addIndexColumn() // This adds DT_RowIndex
+            ->addIndexColumn()
+            ->addColumn('roles', function ($user) {
+                if ($user->roles->isEmpty()) {
+                    return '<span class="badge badge-danger">No Role Assigned !</span>';
+                }
+
+                return $user->roles->pluck('name')
+                    ->map(function ($role) {
+                        return '<span class="badge badge-info">' . $role . '</span>';
+                    })
+                    ->implode(' ');
+            })
+            ->addColumn('created_at', function ($user) {
+                return $user->created_at->format('Y-m-d H:i:s');
+            })
             ->addColumn('action', function ($user) {
                 return view('admin.users.action', compact('user'));
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['roles', 'action'])
             ->make(true);
     }
 
     public function create()
     {
-        return view('admin.users.create');
+        $roles = Role::all();
+        return view('admin.users.create', compact('roles'));
     }
 
     public function store(StoreUserRequest $request)
     {
-        User::create($request->validated());
+        $user = User::create($request->validated());
+        $user->syncRoles($request->roles);
         return redirect()->route('admin.users.index');
     }
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        $roles = Role::all();
+        $userRole = $user->roles->first();
+        return view('admin.users.edit', compact('user', 'roles', 'userRole'));
     }
 
     public function update(UpdateUserRequest $request, User $user)
@@ -58,6 +77,7 @@ class UserController extends Controller
         }
 
         $user->save();
+        $user->syncRoles($request->roles);
 
         return redirect()->route('admin.users.index');
     }

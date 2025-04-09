@@ -4,7 +4,7 @@
 
 @section('content_header')
     <h1>Edit User</h1>
-@endsection
+@stop
 
 @section('content')
     <div class="card">
@@ -12,23 +12,40 @@
             <form action="{{ route('admin.users.update', $user) }}" method="POST">
                 @csrf
                 @method('PUT')
+                <div class="form-group">
+                    <x-adminlte-input name="name" label="Name" placeholder="Enter name" value="{{ $user->name }}"/>
+                </div>
 
-                <x-adminlte-input name="name" label="Name" placeholder="Enter name" icon="fas fa-user"
-                    value="{{ old('name', $user->name) }}" required />
+                <div class="form-group">
+                    <x-adminlte-input name="email" type="email" label="Email" placeholder="Enter email" value="{{ $user->email }}"/>
+                </div>
 
-                <x-adminlte-input name="email" type="email" label="Email" placeholder="Enter email"
-                    icon="fas fa-envelope" value="{{ old('email', $user->email) }}" required />
+                <div class="form-group">
+                    <x-adminlte-input name="password" type="password" label="Password" placeholder="Enter password to change"/>
+                    <small class="form-text text-muted">Leave empty to keep current password</small>
+                </div>
 
-                <x-adminlte-input name="password" type="password" label="Password (leave empty to keep current)"
-                    placeholder="Enter new password" icon="fas fa-lock" />
+                <div class="form-group">
+                    <x-adminlte-input name="password_confirmation" type="password" label="Confirm Password" placeholder="Confirm password"/>
+                </div>
 
-                <x-adminlte-input name="password_confirmation" type="password" label="Confirm Password"
-                    placeholder="Confirm new password" icon="fas fa-lock" />
+                @php
+                    $config = [
+                        'placeholder' => 'Select roles',
+                        'allowClear' => true,
+                    ];
+                @endphp
 
-                <x-adminlte-button type="submit" label="Update User" theme="primary" icon="fas fa-save" />
-                <x-adminlte-button label="Cancel" theme="secondary" icon="fas fa-times"
-                    onclick="window.location='{{ route('admin.users.index') }}'" />
+                <x-adminlte-select2 id="roles" name="roles[]" label="Roles" :config="$config" multiple>
+                    @foreach($roles as $role)
+                        <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
+                            {{ $role->name }}
+                        </option>
+                    @endforeach
+                </x-adminlte-select2>
+
+                <x-adminlte-button type="submit" label="Update User" theme="primary"/>
             </form>
         </div>
     </div>
-@endsection
+@stop
