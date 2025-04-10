@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -34,4 +35,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     //permissions
     Route::get('permissions/get-data', [PermissionController::class, 'getData'])->name('permissions.data');
     Route::resource('permissions', PermissionController::class);
+
+    //menus
+    Route::resource('menus', MenuController::class);
+    Route::post('menus/update-order', [MenuController::class, 'updateOrder'])->name('menus.update-order');
 });
